@@ -45,7 +45,7 @@ cd $1
 git init
 git remote add poky-micro https://github.com/tzanussi/poky-micro.git
 git remote update
-git checkout -b dizzy0 poky/dizzy
+git checkout -b dizzy0 poky-micro/dizzy
 git checkout -f
 
 mkdir meta-intel
