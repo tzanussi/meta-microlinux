@@ -43,7 +43,7 @@ I. Building the meta-micro-galileo BSP layer
 
 Get the clone-micro-galileo script:
 
-  $ wget https://github.com/tzanussi/meta-micro-galileo/raw/dizzy/meta-micro-galileo/clone-micro-galileo
+  $ wget https://github.com/tzanussi/meta-micro-galileo/raw/dizzy/clone-micro-galileo
 
 Use the clone-micro-galileo script to set things up:
 
