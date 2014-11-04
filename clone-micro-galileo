@@ -1,16 +1,16 @@
 #!/bin/bash
-# usage: clone-galileo <dirname>
+# usage: clone-micro-galileo <dirname>
 #
 # After running this script, cd into <dirname> and source the environment:
 #
 # cd <dirname>
 # source oe-init-build-env
 
-# Add meta-intel and meta-intel/meta-galileo to BBLAYERS in
+# Add meta-intel and meta-intel/meta-micro-galileo to BBLAYERS in
 # build/conf/bblayers.conf e.g:
 
 #  /home/trz/yocto/micro/meta-intel \
-#  /home/trz/yocto/micro/meta-intel/meta-galileo \
+#  /home/trz/yocto/micro/meta-intel/meta-micro-galileo \
 
 # Add to build/conf/local.conf (before MACHINE ??= "qemux86"):
 # MACHINE ?= "galileo"
@@ -31,8 +31,8 @@
 # Just doing nothing will boot into the microYocto image
 #
 # The built-in IP address is 192.168.1.223.  To change it, you'll
-# either need to do it manually after boot, or change the meta-galileo
-# layer and rebuild.
+# either need to do it manually after boot, or change the
+# meta-micro-galileo layer and rebuild.
 #
 # ssh to that address and login as root with no password:
 #
@@ -43,18 +43,27 @@ mkdir $1
 cd $1
 
 git init
-git remote add poky https://github.com/tzanussi/poky.git
+git remote add poky-micro https://github.com/tzanussi/poky-micro.git
 git remote update
-git checkout -b daisy0 poky/daisy
+git checkout -b dizzy0 poky/dizzy
 git checkout -f
 
 mkdir meta-intel
 cd meta-intel
 git init
-git remote add meta-galileo https://github.com/tzanussi/meta-galileo.git
+git remote add meta-intel git://git.yoctoproject.org/meta-intel
 git remote update
-git checkout -b daisy0 meta-galileo/daisy
+git checkout -b dizzy0 meta-intel/master
 git checkout -f
 
+mkdir meta-micro-galileo
+cd meta-micro-galileo
+git init
+git remote add meta-micro-galileo https://github.com/tzanussi/meta-micro-galileo.git
+git remote update
+git checkout -b dizzy0 meta-micro-galileo/dizzy
+git checkout -f
+
+cd ..
 cd ..
 

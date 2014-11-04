@@ -1,5 +1,5 @@
-This README file contains information on building the meta-galileo
-BSP layer, and booting the resulting images.
+This README file contains information on building the
+meta-micro-galileo BSP layer, and booting the resulting images.
 
 Please see the corresponding sections below for details.
 
@@ -9,19 +9,19 @@ Dependencies
 This layer depends on:
 
   URI: git://git.openembedded.org/bitbake
-  branch: dora
+  branch: dizzy
 
-  URI: git://github.com/tzanussi/poky.git
+  URI: git://github.com/tzanussi/poky-micro.git
   layers: poky
-  branch: dora
+  branch: dizzy
 
-  URI: https://github.com/tzanussi/meta-galileo.git
-  layers: meta-galileo
-  branch: dora
+  URI: https://github.com/tzanussi/meta-micro-galileo.git
+  layers: meta-micro-galileo
+  branch: dizzy
 
-  URI: git://github.com/tzanussi/linux-yocto-micro-3.14.git
-  layers: linux-yocto-micro-3.14
-  branch: meta, lto, net-diet, standard/micro/galileo
+  URI: git://github.com/tzanussi/linux-yocto-micro-3.17.git
+  layers: linux-yocto-micro-3.17
+  branch: meta, lto, net-diet, tinification, micro/galileo
 
 
 Patches
@@ -35,30 +35,30 @@ Maintainer: Tom Zanussi <tom.zanussi@linux.intel.com>
 Table of Contents
 =================
 
-  I. Building the meta-galileo BSP layer
+  I. Building the meta-micro-galileo BSP layer
 
 
-I. Building the meta-galileo BSP layer
+I. Building the meta-micro-galileo BSP layer
 ========================================
 
-Get the clone-galileo script:
+Get the clone-micro-galileo script:
 
-  $ wget https://github.com/tzanussi/meta-galileo/raw/daisy/meta-galileo/clone-galileo
+  $ wget https://github.com/tzanussi/meta-micro-galileo/raw/dizzy/meta-micro-galileo/clone-micro-galileo
 
-Use the clone-galileo script to set things up:
+Use the clone-micro-galileo script to set things up:
 
-  $ clone-galileo <dirname>
+  $ clone-micro-galileo <dirname>
 
 After running this script, cd into <dirname> and source the environment:
 
   $ cd <dirname>
   $  source oe-init-build-env
 
-Add meta-intel and meta-intel/meta-galileo to BBLAYERS in
+Add meta-intel and meta-intel/meta-micro-galileo to BBLAYERS in
 build/conf/bblayers.conf e.g:
 
   /home/trz/yocto/micro/meta-intel \
-  /home/trz/yocto/micro/meta-intel/meta-galileo \
+  /home/trz/yocto/micro/meta-intel/meta-micro-galileo \
 
 Add to build/conf/local.conf (before MACHINE ??= "qemux86"):
 
@@ -78,11 +78,11 @@ Burn that to the sdcard and boot the galileo board from it:
 
   $ sudo dd if=micro-galileo-201404041056-mmcblk0.direct of=/dev/sdg
 
-Just doing nothing will boot into the microYocto image.
+Just doing nothing will boot into the microLinux image.
 
 The built-in IP address is 192.168.1.223.  To change it, you'll either
-need to do it manually after boot, or change the meta-galileo layer
-and rebuild.
+need to do it manually after boot, or change the meta-micro-galileo
+layer and rebuild.
 
 ssh to that address and login as root with no password:
 
