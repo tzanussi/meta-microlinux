@@ -4,7 +4,7 @@ PR := "${PR}.1"
 
 KBRANCH = "micro/galileo"
 
-SRC_URI = "git:///home/trz/yocto/galileo-min/kernel/linux-yocto-micro-3.17.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification;name=machine,meta,net-diet,lto,tinification"
+#SRC_URI = "git:///home/trz/yocto/galileo-min/kernel/linux-yocto-micro-3.17.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification;name=machine,meta,net-diet,lto,tinification"
 
 # We want MICRO features for a micro build
 KERNEL_FEATURES_MICRO = "${KERNEL_FEATURES_LTO} \
