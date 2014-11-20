@@ -1,0 +1,41 @@
+Index: git/efi/Makefile.am
+===================================================================
+--- git.orig/efi/Makefile.am
++++ git/efi/Makefile.am
+@@ -33,11 +33,11 @@ GRUBSO_LD_SCRIPT = @GNUEFI_LDS@
+ GRUBSO_LD_FLAGS = -T $(GRUBSO_LD_SCRIPT) -nostdlib -shared -Bsymbolic -Map=grub.map
+ 
+ GRUBSO_OBJS = efimain.o
+-GRUBSO_LIBS = @GNUEFI_CRT0@ $(top_srcdir)/stage2/libstage2.a \
++GRUBSO_LIBS = @GNUEFI_CRT0@ $(top_builddir)/stage2/libstage2.a \
+ 		libgrubefi.a @LIBGCC@
+ 
+ if NETBOOT_SUPPORT
+-GRUBSO_LIBS += $(top_srcdir)/netboot/libdrivers.a
++GRUBSO_LIBS += $(top_builddir)/netboot/libdrivers.a
+ endif
+ 
+ pkgdata_DATA = grub.efi
+@@ -62,7 +62,8 @@ clean-local:
+ 	-rm -rf grub.so grub.efi
+ 
+ RELOC_FLAGS = $(STAGE2_CFLAGS) -I$(top_srcdir)/stage1 \
+-	-I$(top_srcdir)/lib -I. -I$(top_srcdir) -I$(top_srcdir)/stage2 \
++	-I$(top_srcdir)/lib -I$(top_srcdir)/efi -I$(top_srcdir) \
++	-I$(top_builddir) -I$(top_srcdir)/stage2 \
+ 	-fno-builtin $(NETBOOT_FLAGS) $(SERIAL_FLAGS) \
+ 	$(HERCULES_FLAGS) $(GRAPHICS_FLAGS)
+ 
+Index: git/efi/grub/types.h
+===================================================================
+--- git.orig/efi/grub/types.h
++++ git/efi/grub/types.h
+@@ -21,7 +21,7 @@
+ #define GRUB_TYPES_HEADER	1
+ 
+ #include <config.h>
+-#include <grub/cpu/types.h>
++#include <grub/i386/types.h>
+ 
+ #define UNUSED __attribute__ ((unused))
+ 
