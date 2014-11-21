@@ -35,11 +35,15 @@ Maintainer: Tom Zanussi <tom.zanussi@linux.intel.com>
 Table of Contents
 =================
 
-  I. Building the meta-micro-galileo BSP layer
+  I.   Setting up the meta-micro-galileo BSP layer
+  II.  Building and booting the meta-micro-galileo BSP layer from an SD card
+  III. Building and booting the meta-micro-galileo BSP layer from SPI flash
+  IV.  Logging in and connecting over the network
+  V.   Contact
 
 
-I. Building the meta-micro-galileo BSP layer
-========================================
+I.   Setting up the meta-micro-galileo BSP layer
+================================================
 
 Get the clone-micro-galileo script:
 
@@ -64,8 +68,25 @@ Add to build/conf/local.conf (before MACHINE ??= "qemux86"):
 
   MACHINE ?= "galileo"
   DISTRO ?= "poky-micro"
- 
-Build the image:
+
+If you run into build problems, please make sure you have a sane build
+environment.  Going throut the Yocto Project Quickstart first should
+ensure that you do:
+
+  https://www.yoctoproject.org/docs/current/yocto-project-qs/yocto-project-qs.html
+
+
+II.  Building and booting the meta-micro-galileo BSP layer from an SD card
+==========================================================================
+
+The bootloader burned into the SPI flash on the Galileo board will
+first look for an SD card with a particular format to boot from.
+
+The 'wic' command below will create the SD card in the proper format
+to serve that purpose, while the image-micro recipe will create the
+input artifacts used by the wic command.
+
+So first, build the image:
 
   $ bitbake image-micro
 
@@ -80,6 +101,255 @@ Burn that to the sdcard and boot the galileo board from it:
 
 Just doing nothing will boot into the microLinux image.
 
+
+III. Building and booting the meta-micro-galileo BSP layer from SPI flash
+=========================================================================
+
+Building a new kernel/bootloader/initrd and booting it from the SPI
+flash on the Galileo board is somewhat more involved than doing it
+from an SD card.
+
+The overall procedure is:
+
+1) Build the microLinux image-micro-spi 'image'.
+
+This will create the kernel, grub.efi, and initrd artifacts needed for
+the flash image.
+
+2) Build EDKII.
+
+This will create the EFI firmware artifacts needed for the flash
+image.
+
+The microLinux flash image is made up of a combination of the
+microLinux distro and the Quark BSP build tools referenced in the
+Quark BSP Build and SW User Guide:
+
+http://downloadmirror.intel.com/23197/eng/Quark_BSP_BuildandSWUserGuide_329687_006.pdf
+
+[You don't need to read that to complete the steps below]
+
+With that as a very brief overview, the details are as follows:
+
+1) $ clone-micro-galileo mygalileo
+
+2) $ source oe-init-build-env
+
+3) $ bitbake image-micro-spi
+
+4) Grab Galileo image tools:
+
+   In top-level dir e.g. mygalileo/:
+   $ mkdir galileo-image-tools
+   $ cd galileo-image-tools
+   $ wget http://downloadmirror.intel.com/23197/eng/Board_Support_Package_Sources_for_Intel_Quark_v1.0.1.7z
+   $ 7za x Board_Support_Package_Sources_for_Intel_Quark_v1.0.1.7z
+
+5) Build EDK II:
+   According to galileo build instructions 1.0.4 at:
+
+     http://www.intel.com/content/www/us/en/do-it-yourself/galileo-maker-quark-board.html
+       Documentation and downloads:
+         https://communities.intel.com/docs/DOC-22226
+           BSP Patches and Build Instructions:
+             http://downloadmirror.intel.com/24355/eng/BSP-Patches-and-Build_Instructions.1.0.4.tar.bz2?_ga=1.21642363.1531134840.1416007693
+
+  5.1) Delete Quark_EDKII_v1.0.1.tar.gz
+
+  $ rm Quark_EDKII_v1.0.1.tar.gz
+
+  5.1) Download Quark EDKII Update:
+
+  $ wget http://downloadmirror.intel.com/23962/eng/Quark_EDKII_v1.0.2.tar.gz
+
+  $ gunzip -c Quark_EDKII_v1.0.2.tar.gz | tar xvf -
+
+  $ cd Quark_EDKII_v1.0.2/
+
+  Make sure libuuid-devel in addition to uuid-devel installed
+
+  $ ./svn_setup.py
+
+  $ svn update
+
+  Follow CryptoPkg/Library/OpensslLib/Patch-HOWTO.txt:
+
+  $ cd CryptoPkg/Library/OpensslLib/
+
+  $ wget http://www.openssl.org/source/openssl-0.9.8w.tar.gz
+
+  $ gunzip -c openssl-0.9.8w.tar.gz | tar xvf -
+
+  $ cd openssl-0.9.8w/
+
+  $ patch -p0 -i ../EDKII_openssl-0.9.8w.patch
+
+  $ cd ..
+
+  $ chmod a+x Install.sh
+
+  $ ./Install.sh
+
+  $ cd ../../..
+
+  $ ./quarkbuild.sh -d32 GCC47 QuarkPlatform
+
+  EDKII build report in Report.log
+
+6) Generate Flash-missingPDAT.bin
+
+  $ cd ..
+
+  $ gunzip -c spi-flash-tools_v1.0.1.tar.gz | tar xvf -
+
+  $ gunzip -c sysimage_v1.0.1.tar.gz | tar xvf -
+
+  $ cd sysimage_v1.0.1/sysimage.CP-8M-debug
+
+  Edit layout.conf to reflect the EDKII build and yocto build artifacts
+
+  For instance, the first one that needs changing is item_file under
+  [ROM_OVERLAY].  It needs to go from:
+
+    item_file=../../Quark_EDKII/Build/QuarkPlatform/PLAIN/DEBUG_GCC/FV/FlashModules/EDKII_BOOTROM_OVERRIDE.Fv
+
+  To:
+
+    item_file=../../Quark_EDKII_v1.0.2/Build/QuarkPlatform/DEBUG_GCC47/FV/FlashModules/EDKII_BOOTROM_OVERRIDE.Fv
+
+  i.e. Quark_EDKII -> Quark_EDKII_v1.0.2 and PLAIN/DEBUG_GCC -> DEBUG_GCC47
+
+  You could also create a QuarkEDKII and DEBUG_GCC symlinks and avoid
+  changing them all, but you'd sill need to remove PLAIN, so either
+  way...
+
+  Do the same for the other EDKII paths in layout.conf.
+
+  Also do the same for the yocto artifacts. Change:
+
+    ../../meta-clanton/yocto_build/tmp/deploy/images/image-spi-clanton.cpio.lzma
+
+  To:
+
+    ../../../build/tmp/deploy/images/galileo/image-micro-spi-galileo.cpio.gz
+
+  Change:
+
+    ../../meta-clanton/yocto_build/tmp/deploy/images/bzImage
+
+  To:
+
+    ../../../build/tmp/deploy/images/galileo/bzImage
+
+  Change:
+
+    ../../meta-clanton/yocto_build/tmp/deploy/images/grub.efi
+
+  To:
+
+    ../../../build/tmp/deploy/images/galileo/grub.efi
+
+  Note: Make sure openssl-devel installed
+
+  $ ../../spi-flash-tools_v1.0.1/Makefile
+
+  That should result in the creation of ./Flash-missingPDAT.bin
+
+  $ cd ../..
+
+7) Generate Flash-missingPDAT.bin
+
+  $ cd spi-flash-tools_v1.0.1/platform-data
+
+  $ cp sample-platform-data.ini platform-data.ini
+
+  Edit platform-data.ini:
+
+  NOTE: This may be different for your board.  In my case, the
+  instructions referenced above say that the blue Galileo board should
+  be 6/kipsbay-fabD.  After bricking my board, I tried 3/KipsBay
+  instead, which worked fine.
+
+  Change:
+
+  [Platform Type]
+  data.value=2
+
+  To:
+
+  [Platform Type]
+  data.value=3
+
+  Change:
+
+  [Mrc Params]
+  data.value=MRC/clantonpeak.v1.bin
+
+  To:
+
+  [Mrc Params]
+  data.value=MRC/kipsbay.v1.bin
+
+  Find the MAC address sticker on your board and change the [MAC
+  address 0] data.value to that e.g.:
+
+  [MAC address 0]
+  data.value=984FEE004D25
+
+  $ ./platform-data-patch.py -p platform-data.ini -i
+    ../../sysimage_v1.0.1/sysimage.CP-8M-debug/Flash-missingPDAT.bin
+
+  That should result in the creation of ./Flash+PlatformData.bin
+
+8) Burn Flash+PlatformData.bin to the Galileo's SPI flash.
+
+  NOTE: I used flashrom with a Dediprog SF100 for this.  flashrom has
+  dediprog support, but it may not yet be ready for primetime (it
+  worked fine for me, if slowly).  I also used fedora 20, which
+  doesn't enable dediprog support, so I needed to get latest stable
+  flashrom tarball and build it myself.  Even there, dediprog isn't
+  enabled, and I needed to enable it by saying CONFIG_DEDIPROG=yes in
+  the Makefile and building.  That gave me:
+
+    /home/trz/microLinux/tools/flashrom/flashrom-0.9.7/flashrom
+
+  $ sudo /home/trz/microLinux/tools/flashrom/flashrom-0.9.7/flashrom -p
+    dediprog -w Flash+PlatformData.bin -o writelog.txt
+
+  If successful, you should see something like:
+
+    flashrom v0.9.7-r1711 on Linux 3.17.2-200.fc20.x86_64 (x86_64)
+    flashrom is free software, get the source code at http://www.flashrom.org
+
+    Calibrating delay loop... OK.
+    Found Winbond flash chip "W25Q64.V" (8192 kB, SPI) on dediprog.
+    Reading old flash chip contents... done.
+    Erasing and writing flash chip... Erase/write done.
+    Verifying flash... VERIFIED.
+
+9) Reboot your Galileo board and enjoy!
+
+  If successful, you should end up with a lot of debug output on your
+  serial console but end up with something like:
+
+    Poky (Yocto Project Reference Distro) 1.7 galileo /dev/ttyS1
+
+    galileo login:
+
+    root@galileo:~# uname -a
+    Linux galileo 3.17.0-rc7-yocto-micro #1 Fri Nov 14 21:03:18 CST 2014 i586 GNU/Linux
+
+
+IV.  Logging in and connecting over the network
+===============================================
+
+If you have a serial connection, you should see a login prompt.
+Logging in as 'root' with no password should get you in.
+
+TCP/IP networking is also enabled by default, as is sshd.  You'll need
+to connect the Galileo board to a network via the wired ethernet
+socket in order to ssh in.
+
 The built-in IP address is 192.168.1.223.  To change it, you'll either
 need to do it manually after boot, or change the meta-micro-galileo
 layer and rebuild.
@@ -88,18 +358,16 @@ ssh to that address and login as root with no password:
 
   $ ssh -l root 192.168.1.223
 
-If you run into build problems, please make sure you have a sane build
-environment.  Going throut the Yocto Project Quickstart first should
-ensure that you do:
 
-  https://www.yoctoproject.org/docs/current/yocto-project-qs/yocto-project-qs.html
+V.   Contact
+============
 
-There's also a whole host of other documentation there which may be of
+For any questions/comments (or even build questions if you get stuck),
+feel free to contact me at:
+
+  tom.zanussi@linux.intel.com
+
+There's also a whole host of other documentation here, which may be of
 interest:
 
 https://www.yoctoproject.org/documentation
-
-For any other questions/comments (or even build questions if you get
-stuck), feel free to contact me at:
-
-  tom.zanussi@linux.intel.com
