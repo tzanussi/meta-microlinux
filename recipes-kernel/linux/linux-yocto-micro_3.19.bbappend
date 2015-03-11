@@ -2,9 +2,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 PR := "${PR}.1"
 
-KBRANCH = "micro/galileo"
+KBRANCH_galileo = "micro/galileo"
 
-#SRC_URI = "git:///home/trz/yocto/galileo-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
+SRC_URI_galileo = "git:///home/trz/yocto/galileo-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
 
 # We want MICRO features for a micro build
 KERNEL_FEATURES_MICRO = "${KERNEL_FEATURES_LTO} \
