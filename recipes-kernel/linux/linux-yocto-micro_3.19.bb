@@ -3,7 +3,8 @@ require recipes-kernel/linux/linux-yocto.inc
 # We need lzma (as CONFIG_KERNEL_LZMA=y)
 DEPENDS += "xz-native"
 
-KBRANCH_DEFAULT = "micro/galileo"
+KBRANCH_DEFAULT_galileo = "micro/galileo"
+KBRANCH_DEFAULT_minnowmax-64 = "micro/minnowmax"
 KBRANCH = "${KBRANCH_DEFAULT}"
 
 LINUX_KERNEL_TYPE = "micro"
@@ -19,9 +20,11 @@ KMETA = "meta"
 PR = "${INC_PR}.1"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
-SRC_URI = "git://github.com/tzanussi/linux-yocto-micro-3.19.git;bareclone=1;branch=${KBRANCH},meta,lto,net-diet,tinification,staging;name=machine,meta,lto,net-diet,tinification,staging"
+SRC_URI_galileo = "git://github.com/tzanussi/linux-yocto-micro-3.19.git;bareclone=1;branch=${KBRANCH},meta,lto,net-diet,tinification,staging;name=machine,meta,lto,net-diet,tinification,staging"
 
-COMPATIBLE_MACHINE = "(galileo)"
+SRC_URI_minnowmax-64 = "git://github.com/tzanussi/linux-yocto-micro-3.19.git;bareclone=1;branch=${KBRANCH},meta,lto,net-diet,tinification,staging;name=machine,meta,lto,net-diet,tinification,staging"
+
+COMPATIBLE_MACHINE = "(galileo|minnowmax-64)"
 
 # Functionality flags
 KERNEL_FEATURES = ""

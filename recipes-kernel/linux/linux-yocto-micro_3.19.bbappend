@@ -6,6 +6,10 @@ KBRANCH_galileo = "micro/galileo"
 
 SRC_URI_galileo = "git:///home/trz/yocto/galileo-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
 
+KBRANCH_minnowmax-64 = "micro/minnowmax"
+
+SRC_URI_minnowmax-64 = "git:///home/trz/yocto/galileo-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
+
 # We want MICRO features for a micro build
 KERNEL_FEATURES_MICRO = "${KERNEL_FEATURES_LTO} \
                          ${KERNEL_FEATURES_NET_DIET} \
@@ -187,7 +191,7 @@ SRCREV_tinification="${AUTOREV}"
 SRCREV_staging="${AUTOREV}"
 LOCALCOUNT = "0"
 
-COMPATIBLE_MACHINE_ = "galileo"
+COMPATIBLE_MACHINE_ = "galileo|minnowmax-64"
 
 RDEPENDS_kernel-base=""
 
