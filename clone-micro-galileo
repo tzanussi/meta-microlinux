@@ -53,7 +53,7 @@ cd meta-intel
 git init
 git remote add meta-intel git://git.yoctoproject.org/meta-intel
 git remote update
-git checkout -b dizzy0 meta-intel/master
+git checkout -b dizzy0 meta-intel/dizzy
 git checkout -f
 
 mkdir meta-micro-galileo
