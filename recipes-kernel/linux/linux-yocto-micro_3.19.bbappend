@@ -176,7 +176,16 @@ KERNEL_FEATURES_BROKEN = "${KERNEL_FEATURES_LTO} \
 
 # Smallest useable kernel i.e. boots to usable shell, nothing more guaranteed
 KERNEL_FEATURES_SMALLEST = "${KERNEL_FEATURES_SMALLEST_NORMAL} \
-                           "
+                            cfg/bug-disable.scc \
+                            cfg/inet-disable.scc \
+                            cfg/net-disable.scc \
+                            cfg/block-disable.scc \
+                            cfg/mmc-disable.scc \
+                            cfg/mtd-disable.scc \
+                            cfg/acpi-disable.scc \
+                            cfg/virt-kmem.scc \
+                            cfg/printk-disable.scc \
+                            "
 
 #KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST} \
 #                        "
@@ -189,7 +198,7 @@ SRCREV_tinification="${AUTOREV}"
 SRCREV_staging="${AUTOREV}"
 LOCALCOUNT = "0"
 
-COMPATIBLE_MACHINE_ = "galileo|minnowmax-64"
+COMPATIBLE_MACHINE = "(galileo|minnowmax-64)"
 
 RDEPENDS_kernel-base=""
 
