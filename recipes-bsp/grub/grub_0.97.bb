@@ -13,7 +13,9 @@ PV = "0.97+git${SRCPV}"
 
 RDEPENDS_${PN} = "diffutils"
 
-SRC_URI = "git://github.com/vathpela/grub-fedora.git; \
+DEPENDS = "gnu-efi"
+
+SRC_URI = "git://github.com/mjg59/grub-fedora.git; \
            file://clanton.patch \
            file://builddir-srcdir-split.patch \
 "
