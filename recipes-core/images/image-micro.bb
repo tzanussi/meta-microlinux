@@ -15,6 +15,6 @@ IMAGE_FEATURES += "ssh-server-dropbear"
 IMAGE_ROOTFS_SIZE = "512"
 #IMAGE_EXTRA_SPACE = "20000"
 
-EXTRA_IMAGEDEPENDS = "grub-conf"
+EXTRA_IMAGEDEPENDS += "grub-conf"
 
 #IMAGE_FSTYPES += "jffs2"
