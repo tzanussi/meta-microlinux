@@ -1,5 +1,5 @@
-This README file contains information on building the
-meta-micro-galileo BSP layer, and booting the resulting images.
+This README file contains information on building the meta-microlinux
+BSP layer, and booting the resulting images.
 
 Please see the corresponding sections below for details.
 
@@ -15,19 +15,20 @@ This layer depends on:
   layers: poky
   branch: dizzy
 
-  URI: https://github.com/tzanussi/meta-micro-galileo.git
-  layers: meta-micro-galileo
+  URI: https://github.com/tzanussi/meta-microlinux.git
+  layers: meta-microlinux
   branch: dizzy
 
-  URI: git://github.com/tzanussi/linux-yocto-micro-3.17.git
-  layers: linux-yocto-micro-3.17
-  branch: meta, lto, net-diet, tinification, micro/galileo
+  URI: git://github.com/tzanussi/linux-yocto-micro-3.19.git
+  layers: linux-yocto-micro-3.19
+  branch: meta, lto, net-diet, tinification, staging,
+          micro/galileo, micro/minnowmax
 
 
 Patches
 =======
 
-Please submit any patches against this BSP to the maintainer:
+Please submit any patches against this layer to the maintainer:
 
 Maintainer: Tom Zanussi <tom.zanussi@linux.intel.com>
 
@@ -35,38 +36,56 @@ Maintainer: Tom Zanussi <tom.zanussi@linux.intel.com>
 Table of Contents
 =================
 
-  I.   Setting up the meta-micro-galileo BSP layer
-  II.  Building and booting the meta-micro-galileo BSP layer from an SD card
-  III. Building and booting the meta-micro-galileo BSP layer from SPI flash
-  IV.  Logging in and connecting over the network
-  V.   Contact
+  I.   Setting up the meta-microlinux BSP layer
+  II.  Building and booting the galileo BSP layer from an SD card
+  III. Building and booting the galileo BSP layer from SPI flash
+  IV.  Building and booting the minnowmax-64 BSP layer from an SD card
+  V.   Building and booting the minnowmax-64 BSP layer from a USB drive
+  VI.  Logging in and connecting over the network
+  VII. Contact
 
 
-I.   Setting up the meta-micro-galileo BSP layer
-================================================
+I.   Setting up the meta-microlinux BSP layer
+=============================================
 
-Get the clone-micro-galileo script:
+Get the clone-microlinux script:
 
-  $ wget https://github.com/tzanussi/meta-micro-galileo/raw/dizzy/clone-micro-galileo
+  $ wget https://github.com/tzanussi/meta-microlinux/raw/dizzy/clone-microlinux
 
-Use the clone-micro-galileo script to set things up:
+Use the clone-microlinux script to set things up:
 
-  $ clone-micro-galileo <dirname>
+  $ clone-microlinux <dirname>
 
 After running this script, cd into <dirname> and source the environment:
 
   $ cd <dirname>
   $  source oe-init-build-env
 
-Add meta-intel and meta-intel/meta-micro-galileo to BBLAYERS in
+Add meta-intel and meta-intel/meta-microlinux to BBLAYERS in
 build/conf/bblayers.conf e.g:
 
   /home/trz/yocto/micro/meta-intel \
-  /home/trz/yocto/micro/meta-intel/meta-micro-galileo \
+  /home/trz/yocto/micro/meta-intel/meta-microlinux \
 
-Add to build/conf/local.conf (before MACHINE ??= "qemux86"):
+The meta-microlinux layer provides support for multiple machines:
+
+  * galileo             Galileo board (32-bit)
+  * minnowmax-64	minnowMAX board (64-bit support)
+
+To build an image for a particular machine, you need to specify that
+machine as the target for the build, and set the DISTRO to
+'poky-micro'.
+
+For instance, to build for the galileo board, add these lines to
+build/conf/local.conf (before MACHINE ??= "qemux86"):
 
   MACHINE ?= "galileo"
+  DISTRO ?= "poky-micro"
+
+To build a 64-bit kernel and image for the minnowMAX board, add these
+lines to build/conf/local.conf (before MACHINE ??= "qemux86"):
+
+  MACHINE ?= "minnowmax-64"
   DISTRO ?= "poky-micro"
 
 If you run into build problems, please make sure you have a sane build
@@ -76,8 +95,8 @@ ensure that you do:
   https://www.yoctoproject.org/docs/current/yocto-project-qs/yocto-project-qs.html
 
 
-II.  Building and booting the meta-micro-galileo BSP layer from an SD card
-==========================================================================
+II.  Building and booting the galileo BSP layer from an SD card
+===============================================================
 
 The bootloader burned into the SPI flash on the Galileo board will
 first look for an SD card with a particular format to boot from.
@@ -102,8 +121,8 @@ Burn that to the sdcard and boot the galileo board from it:
 Just doing nothing will boot into the microLinux image.
 
 
-III. Building and booting the meta-micro-galileo BSP layer from SPI flash
-=========================================================================
+III. Building and booting the galileo BSP layer from SPI flash
+==============================================================
 
 Building a new kernel/bootloader/initrd and booting it from the SPI
 flash on the Galileo board is somewhat more involved than doing it
@@ -131,7 +150,7 @@ http://downloadmirror.intel.com/23197/eng/Quark_BSP_BuildandSWUserGuide_329687_0
 
 With that as a very brief overview, the details are as follows:
 
-1) $ clone-micro-galileo mygalileo
+1) $ clone-microlinux mygalileo
 
 2) $ source oe-init-build-env
 
@@ -340,7 +359,55 @@ With that as a very brief overview, the details are as follows:
     Linux galileo 3.17.0-rc7-yocto-micro #1 Fri Nov 14 21:03:18 CST 2014 i586 GNU/Linux
 
 
-IV.  Logging in and connecting over the network
+IV.  Building and booting the minnowmax-64 BSP layer from an SD card
+====================================================================
+
+The 'wic' command below will create a partitioned image that can be
+used to boot the minnowMAX from the SD card, while the image-micro
+recipe will create the input artifacts used by the wic command.
+
+So first, build the image:
+
+  $ bitbake image-micro
+
+And with the artifacts generated from the build, create a bootable
+sdcard image:
+
+  $ wic create micro-minnowmax-64-sdcard -e image-micro
+
+The output will tell you the location of the .direct image
+Burn that to the sdcard and boot the galileo board from it:
+
+  $ sudo dd if=micro-minnowmax-64-sdcard-201503181715-mmcblk.direct of=/dev/sdc
+
+Just doing nothing will boot into the microLinux image.
+
+
+V.   Building and booting the minnowmax-64 BSP layer from a USB drive
+=====================================================================
+
+The 'wic' command below will create a partitioned image that can be
+used to boot the minnowMAX from a USB drive, while the image-micro
+recipe will create the input artifacts used by the wic command.
+
+So first, build the image:
+
+  $ bitbake image-micro
+
+And with the artifacts generated from the build, create a bootable
+sdcard image:
+
+  $ wic create micro-minnowmax-64-usbdisk -e image-micro
+
+The output will tell you the location of the .direct image
+Burn that to the sdcard and boot the galileo board from it:
+
+  $ sudo dd if=/micro-minnowmax-64-usbdisk-201503181700-sda.direct of=/dev/sdc
+
+Just doing nothing will boot into the microLinux image.
+
+
+VI.  Logging in and connecting over the network
 ===============================================
 
 If you have a serial connection, you should see a login prompt.
@@ -351,16 +418,16 @@ to connect the Galileo board to a network via the wired ethernet
 socket in order to ssh in.
 
 The built-in IP address is 192.168.1.223.  To change it, you'll either
-need to do it manually after boot, or change the meta-micro-galileo
-layer and rebuild.
+need to do it manually after boot, or change the meta-microlinux layer
+and rebuild.
 
 ssh to that address and login as root with no password:
 
   $ ssh -l root 192.168.1.223
 
 
-V.   Contact
-============
+VII.   Contact
+==============
 
 For any questions/comments (or even build questions if you get stuck),
 feel free to contact me at:
