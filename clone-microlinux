@@ -1,43 +1,56 @@
 #!/bin/bash
-# usage: clone-micro-galileo <dirname>
+# usage: clone-microlinux <dirname>
 #
 # After running this script, cd into <dirname> and source the environment:
 #
 # cd <dirname>
 # source oe-init-build-env
 
-# Add meta-intel and meta-intel/meta-micro-galileo to BBLAYERS in
+# Add meta-intel and meta-intel/meta-microlinux to BBLAYERS in
 # build/conf/bblayers.conf e.g:
 
 #  /home/trz/yocto/micro/meta-intel \
-#  /home/trz/yocto/micro/meta-intel/meta-micro-galileo \
+#  /home/trz/yocto/micro/meta-intel/meta-microlinux \
 
-# Add to build/conf/local.conf (before MACHINE ??= "qemux86"):
+# Add chosen machine to build/conf/local.conf (before MACHINE ??= "qemux86"):
 # MACHINE ?= "galileo"
 # DISTRO ?= "poky-micro"
 
 # Build the image:
 # bitbake image-micro
 
-# Create a bootable sdcard image:
+# Create a bootable image, for example:
 #
 # $ wic create micro-galileo -e image-micro
 #
+# or
+#
+# $ wic create micro-minnowmax-64-usbdisk -e image-micro
+#
 # The output will tell you the location of the .direct image
-# Burn that to the sdcard and boot the galileo board from it:
+# Burn that to the boot device and boot the board from it:
 #
 # $ sudo dd if=micro-galileo-201404041056-mmcblk0.direct of=/dev/sdg
 #
-# Just doing nothing will boot into the microYocto image
+# Just doing nothing will boot into the microLinux image
 #
 # The built-in IP address is 192.168.1.223.  To change it, you'll
 # either need to do it manually after boot, or change the
-# meta-micro-galileo layer and rebuild.
+# meta-microlinux layer and rebuild.
 #
 # ssh to that address and login as root with no password:
 #
 # $ ssh -l root 192.168.1.223
 #
+
+usage() {
+    echo "Usage: $(basename $0) <dirname>"
+}
+
+if [ $# -lt 1 ]; then
+    usage
+    exit 1
+fi
 
 mkdir $1
 cd $1
@@ -56,14 +69,13 @@ git remote update
 git checkout -b dizzy0 meta-intel/dizzy
 git checkout -f
 
-mkdir meta-micro-galileo
-cd meta-micro-galileo
+mkdir meta-microlinux
+cd meta-microlinux
 git init
-git remote add meta-micro-galileo https://github.com/tzanussi/meta-micro-galileo.git
+git remote add meta-microlinux https://github.com/tzanussi/meta-microlinux.git
 git remote update
-git checkout -b dizzy0 meta-micro-galileo/dizzy
+git checkout -b dizzy0 meta-microlinux/dizzy
 git checkout -f
 
 cd ..
 cd ..
-
