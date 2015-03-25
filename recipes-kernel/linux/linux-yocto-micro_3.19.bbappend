@@ -6,7 +6,7 @@ PR := "${PR}.1"
 #SRC_URI_galileo = "git:///home/trz/yocto/galileo-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
 
 #KBRANCH_minnowmax-64 = "micro/minnowmax"
-#SRC_URI_minnowmax-64 = "git:///home/trz/yocto/galileo-minnowmax/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
+#SRC_URI_minnowmax-64 = "git:///home/trz/yocto/microlinux-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
 
 # We want MICRO features for a micro build
 KERNEL_FEATURES_MICRO = "${KERNEL_FEATURES_LTO} \
@@ -129,7 +129,6 @@ KERNEL_FEATURES_NONET = "cfg/net-disable.scc"
 # Smallest 'normal' kernel i.e. can be used to scp new kernel to sd card
 # and see dmesg, oops, etc.  Cuts past this affect *something* important.
 KERNEL_FEATURES_SMALLEST_NORMAL = "${KERNEL_FEATURES_LTO} \
-			cfg/pae-disable.scc \
 			features/tinification/tinification.scc \
 			cfg/perf-disable.scc \
 			features/tinification/staging.scc \
@@ -161,13 +160,15 @@ KERNEL_FEATURES_SMALLEST_NORMAL = "${KERNEL_FEATURES_LTO} \
                         cfg/net/packet-disable.scc \
                         cfg/sysfs-disable.scc \
                         cfg/pcie-disable.scc \
+                        cfg/pty-enable.scc \
                         "
 
 KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
+			cfg/pae-disable.scc \
                         "
 
-#KERNEL_FEATURES_append_minnowmax-64 += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
-#                        "
+KERNEL_FEATURES_append_minnowmax-64 += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
+                        "
 
 # valuable features but broken and need fixing:
 # - multiuser - saves about 15k but needs userspace fixes, can't log in
