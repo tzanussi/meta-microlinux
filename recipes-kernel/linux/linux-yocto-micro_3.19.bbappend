@@ -3,7 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 PR := "${PR}.1"
 
 #KBRANCH_galileo = "micro/galileo"
-#SRC_URI_galileo = "git:///home/trz/yocto/galileo-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
+#SRC_URI_galileo = "git:///home/trz/yocto/microlinux-xip/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
 
 #KBRANCH_minnowmax-64 = "micro/minnowmax"
 #SRC_URI_minnowmax-64 = "git:///home/trz/yocto/microlinux-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"

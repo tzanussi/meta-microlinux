@@ -144,7 +144,7 @@ The microLinux flash image is made up of a combination of the
 microLinux distro and the Quark BSP build tools referenced in the
 Quark BSP Build and SW User Guide:
 
-http://downloadmirror.intel.com/23197/eng/Quark_BSP_BuildandSWUserGuide_329687_006.pdf
+http://download.intel.com/support/processors/quark/sb/quark_bsp_buildandswuserguide_329687_006.pdf
 
 [You don't need to read that to complete the steps below]
 
@@ -161,29 +161,13 @@ With that as a very brief overview, the details are as follows:
    In top-level dir e.g. mygalileo/:
    $ mkdir galileo-image-tools
    $ cd galileo-image-tools
-   $ wget http://downloadmirror.intel.com/23197/eng/Board_Support_Package_Sources_for_Intel_Quark_v1.0.1.7z
-   $ 7za x Board_Support_Package_Sources_for_Intel_Quark_v1.0.1.7z
+   $ wget http://downloadmirror.intel.com/23197/eng/Board_Support_Package_Sources_for_Intel_Quark_v1.1.0.7z
+   $ 7za x Board_Support_Package_Sources_for_Intel_Quark_v1.1.0.7z
 
 5) Build EDK II:
-   According to galileo build instructions 1.0.4 at:
+  $ gunzip -c Quark_EDKII_v1.1.0.tar.gz | tar xvf -
 
-     http://www.intel.com/content/www/us/en/do-it-yourself/galileo-maker-quark-board.html
-       Documentation and downloads:
-         https://communities.intel.com/docs/DOC-22226
-           BSP Patches and Build Instructions:
-             http://downloadmirror.intel.com/24355/eng/BSP-Patches-and-Build_Instructions.1.0.4.tar.bz2?_ga=1.21642363.1531134840.1416007693
-
-  5.1) Delete Quark_EDKII_v1.0.1.tar.gz
-
-  $ rm Quark_EDKII_v1.0.1.tar.gz
-
-  5.1) Download Quark EDKII Update:
-
-  $ wget http://downloadmirror.intel.com/23962/eng/Quark_EDKII_v1.0.2.tar.gz
-
-  $ gunzip -c Quark_EDKII_v1.0.2.tar.gz | tar xvf -
-
-  $ cd Quark_EDKII_v1.0.2/
+  $ cd Quark_EDKII_v1.1.0/
 
   Make sure libuuid-devel in addition to uuid-devel installed
 
@@ -195,21 +179,21 @@ With that as a very brief overview, the details are as follows:
 
   $ cd CryptoPkg/Library/OpensslLib/
 
-  $ wget http://www.openssl.org/source/openssl-0.9.8w.tar.gz
+  $wget http://www.openssl.org/source/openssl-0.9.8zb.tar.gz
 
-  $ gunzip -c openssl-0.9.8w.tar.gz | tar xvf -
+  $ gunzip -c openssl-0.9.8zb.tar.gz | tar xvf -
 
-  $ cd openssl-0.9.8w/
+  $ cd openssl-0.9.8zb/
 
-  $ patch -p0 -i ../EDKII_openssl-0.9.8w.patch
+  $ patch -p0 -i ../EDKII_openssl-0.9.8zb.patch
 
   $ cd ..
-
-  $ chmod a+x Install.sh
 
   $ ./Install.sh
 
   $ cd ../../..
+
+  Make sure nasm installed, or build will fail (not in instructions)
 
   $ ./quarkbuild.sh -d32 GCC47 QuarkPlatform
 
@@ -219,11 +203,11 @@ With that as a very brief overview, the details are as follows:
 
   $ cd ..
 
-  $ gunzip -c spi-flash-tools_v1.0.1.tar.gz | tar xvf -
+  $ gunzip -c spi-flash-tools_v1.1.0.tar.gz | tar xvf -
 
-  $ gunzip -c sysimage_v1.0.1.tar.gz | tar xvf -
+  $ gunzip -c sysimage_v1.1.0.tar.gz | tar xvf -
 
-  $ cd sysimage_v1.0.1/sysimage.CP-8M-debug
+  $ cd sysimage_v1.1.0/sysimage.CP-8M-debug
 
   Edit layout.conf to reflect the EDKII build and yocto build artifacts
 
@@ -234,12 +218,12 @@ With that as a very brief overview, the details are as follows:
 
   To:
 
-    item_file=../../Quark_EDKII_v1.0.2/Build/QuarkPlatform/DEBUG_GCC47/FV/FlashModules/EDKII_BOOTROM_OVERRIDE.Fv
+    item_file=../../Quark_EDKII_v1.1.0/Build/QuarkPlatform/DEBUG_GCC47/FV/FlashModules/EDKII_BOOTROM_OVERRIDE.Fv
 
-  i.e. Quark_EDKII -> Quark_EDKII_v1.0.2 and PLAIN/DEBUG_GCC -> DEBUG_GCC47
+  i.e. Quark_EDKII -> Quark_EDKII_v1.1.0 and PLAIN/DEBUG_GCC -> DEBUG_GCC47
 
   You could also create a QuarkEDKII and DEBUG_GCC symlinks and avoid
-  changing them all, but you'd sill need to remove PLAIN, so either
+  changing them all, but you'd still need to remove PLAIN, so either
   way...
 
   Do the same for the other EDKII paths in layout.conf.
@@ -270,7 +254,7 @@ With that as a very brief overview, the details are as follows:
 
   Note: Make sure openssl-devel installed
 
-  $ ../../spi-flash-tools_v1.0.1/Makefile
+  $ ../../spi-flash-tools_v1.1.0/Makefile
 
   That should result in the creation of ./Flash-missingPDAT.bin
 
@@ -278,7 +262,7 @@ With that as a very brief overview, the details are as follows:
 
 7) Generate Flash-missingPDAT.bin
 
-  $ cd spi-flash-tools_v1.0.1/platform-data
+  $ cd spi-flash-tools_v1.1.0/platform-data
 
   $ cp sample-platform-data.ini platform-data.ini
 
@@ -316,7 +300,7 @@ With that as a very brief overview, the details are as follows:
   data.value=984FEE004D25
 
   $ ./platform-data-patch.py -p platform-data.ini -i
-    ../../sysimage_v1.0.1/sysimage.CP-8M-debug/Flash-missingPDAT.bin
+    ../../sysimage_v1.1.0/sysimage.CP-8M-debug/Flash-missingPDAT.bin
 
   That should result in the creation of ./Flash+PlatformData.bin
 
