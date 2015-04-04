@@ -3,10 +3,10 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 PR := "${PR}.1"
 
 #KBRANCH_galileo = "micro/galileo"
-#SRC_URI_galileo = "git:///home/trz/yocto/microlinux/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
+#SRC_URI_galileo = "git:///home/trz/yocto/microlinux/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging,xip;name=machine,meta,net-diet,lto,tinification,staging,xip"
 
 #KBRANCH_minnowmax-64 = "micro/minnowmax"
-#SRC_URI_minnowmax-64 = "git:///home/trz/yocto/microlinux-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
+#SRC_URI_minnowmax-64 = "git:///home/trz/yocto/microlinux/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
 
 # We want MICRO features for a micro build
 KERNEL_FEATURES_MICRO = "${KERNEL_FEATURES_LTO} \
@@ -103,6 +103,9 @@ KERNEL_FEATURES_LWIP = "cfg/inet-disable.scc"
 # These are things we use for netless builds
 KERNEL_FEATURES_NONET = "cfg/net-disable.scc"
 
+KERNEL_FEATURES_XIP = "features/tinification/xip.scc \
+                      "
+
 # micro - this is the default thang
 #KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_MICRO} \
 #                                  "
@@ -164,6 +167,8 @@ KERNEL_FEATURES_SMALLEST_NORMAL = "${KERNEL_FEATURES_LTO} \
                         "
 
 KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
+                        ${@base_contains('DISTRO_FEATURES', 'xip', '${KERNEL_FEATURES_XIP}', '', d)} \
+                        ${@base_contains('DISTRO_FEATURES', 'xip', 'features/qemu/blkdev-enable.scc', '', d)} \
 			cfg/pae-disable.scc \
                         "
 
@@ -204,6 +209,7 @@ SRCREV_net-diet="${AUTOREV}"
 SRCREV_lto="${AUTOREV}"
 SRCREV_tinification="${AUTOREV}"
 SRCREV_staging="${AUTOREV}"
+SRCREV_xip="${AUTOREV}"
 LOCALCOUNT = "0"
 
 COMPATIBLE_MACHINE = "(galileo|minnowmax-64)"

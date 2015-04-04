@@ -20,9 +20,9 @@ KMETA = "meta"
 PR = "${INC_PR}.1"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
-SRC_URI_galileo = "git://github.com/tzanussi/linux-yocto-micro-3.19.git;bareclone=1;branch=${KBRANCH},meta,lto,net-diet,tinification,staging;name=machine,meta,lto,net-diet,tinification,staging"
+SRC_URI_galileo = "git://github.com/tzanussi/linux-yocto-micro-3.19.git;bareclone=1;branch=${KBRANCH},meta,lto,net-diet,tinification,staging,xip;name=machine,meta,lto,net-diet,tinification,staging,xip"
 
-SRC_URI_minnowmax-64 = "git://github.com/tzanussi/linux-yocto-micro-3.19.git;bareclone=1;branch=${KBRANCH},meta,lto,net-diet,tinification,staging;name=machine,meta,lto,net-diet,tinification,staging"
+SRC_URI_minnowmax-64 = "git://github.com/tzanussi/linux-yocto-micro-3.19.git;bareclone=1;branch=${KBRANCH},meta,lto,net-diet,tinification,staging,xip;name=machine,meta,lto,net-diet,tinification,staging,xip"
 
 COMPATIBLE_MACHINE = "(galileo|minnowmax-64)"
 
