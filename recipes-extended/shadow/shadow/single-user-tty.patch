@@ -1,0 +1,69 @@
+Index: shadow-4.2.1/libmisc/chowntty.c
+===================================================================
+--- shadow-4.2.1.orig/libmisc/chowntty.c
++++ shadow-4.2.1/libmisc/chowntty.c
+@@ -71,8 +71,7 @@ void chown_tty (const struct passwd *inf
+ 	 * the group as determined above.
+ 	 */
+ 
+-	if (   (fchown (STDIN_FILENO, info->pw_uid, gid) != 0)
+-	    || (fchmod (STDIN_FILENO, (mode_t)getdef_num ("TTYPERM", 0600)) != 0)) {
++	if (0) {
+ 		int err = errno;
+ 
+ 		fprintf (stderr,
+Index: shadow-4.2.1/libmisc/setugid.c
+===================================================================
+--- shadow-4.2.1.orig/libmisc/setugid.c
++++ shadow-4.2.1/libmisc/setugid.c
+@@ -58,32 +58,6 @@
+  */
+ int setup_groups (const struct passwd *info)
+ {
+-	/*
+-	 * Set the real group ID to the primary group ID in the password
+-	 * file.
+-	 */
+-	if (setgid (info->pw_gid) == -1) {
+-		int err = errno;
+-		perror ("setgid");
+-		SYSLOG ((LOG_ERR, "bad group ID `%d' for user `%s': %s\n",
+-		         info->pw_gid, info->pw_name, strerror (err)));
+-		closelog ();
+-		return -1;
+-	}
+-#ifdef HAVE_INITGROUPS
+-	/*
+-	 * For systems which support multiple concurrent groups, go get
+-	 * the group set from the /etc/group file.
+-	 */
+-	if (initgroups (info->pw_name, info->pw_gid) == -1) {
+-		int err = errno;
+-		perror ("initgroups");
+-		SYSLOG ((LOG_ERR, "initgroups failed for user `%s': %s\n",
+-		         info->pw_name, strerror (err)));
+-		closelog ();
+-		return -1;
+-	}
+-#endif
+ 	return 0;
+ }
+ 
+@@ -94,17 +68,6 @@ int setup_groups (const struct passwd *i
+  */
+ int change_uid (const struct passwd *info)
+ {
+-	/*
+-	 * Set the real UID to the UID value in the password file.
+-	 */
+-	if (setuid (info->pw_uid) != 0) {
+-		int err = errno;
+-		perror ("setuid");
+-		SYSLOG ((LOG_ERR, "bad user ID `%d' for user `%s': %s\n",
+-		         (int) info->pw_uid, info->pw_name, strerror (err)));
+-		closelog ();
+-		return -1;
+-	}
+ 	return 0;
+ }
+ 
