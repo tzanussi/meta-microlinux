@@ -3,7 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 PR := "${PR}.1"
 
 #KBRANCH_galileo = "micro/galileo"
-#SRC_URI_galileo = "git:///home/trz/yocto/microlinux-xip/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
+#SRC_URI_galileo = "git:///home/trz/yocto/microlinux/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
 
 #KBRANCH_minnowmax-64 = "micro/minnowmax"
 #SRC_URI_minnowmax-64 = "git:///home/trz/yocto/microlinux-next/kernels/linux-yocto-micro-3.19.git;protocol=file;bareclone=1;branch=${KBRANCH},${KMETA},net-diet,lto,tinification,staging;name=machine,meta,net-diet,lto,tinification,staging"
@@ -171,10 +171,8 @@ KERNEL_FEATURES_append_minnowmax-64 += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
                         "
 
 # valuable features but broken and need fixing:
-# - multiuser - saves about 15k but needs userspace fixes, can't log in
 # - common-clk-enable - should be able to disable this but galileo selects it
 KERNEL_FEATURES_BROKEN = "${KERNEL_FEATURES_LTO} \
-                          cfg/multiuser-disable.scc \
                           cfg/common-clk-enable.scc \
                           "
 
@@ -189,9 +187,15 @@ KERNEL_FEATURES_SMALLEST = "${KERNEL_FEATURES_SMALLEST_NORMAL} \
                             cfg/acpi-disable.scc \
                             cfg/virt-kmem.scc \
                             cfg/printk-disable.scc \
+                            cfg/pty-disable.scc \
+                            ${@base_contains('DISTRO_FEATURES', 'single-user', 'cfg/multiuser-disable.scc', '', d)} \
+                            cfg/proc-disable.scc \
+                            cfg/thermal-disable.scc \
                             "
 
 #KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST} \
+#			cfg/pae-disable.scc \
+#			cfg/efi-disable.scc \
 #                        "
 
 SRCREV_machine_${MACHINE}="${AUTOREV}"
