@@ -1,0 +1,6 @@
+#! /bin/sh
+
+# In case the interface is used as nfsroot, avoid ifup, otherwise
+# nfsroot may lose response
+
+exit 0
