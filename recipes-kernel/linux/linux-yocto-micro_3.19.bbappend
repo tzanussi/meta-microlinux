@@ -60,6 +60,10 @@ KERNEL_FEATURES_NET_DIET = "features/net-diet/net-diet.scc \
                             cfg/net/packet-disable.scc \
                             cfg/net/fib-trie.scc \
                             cfg/rhashtable-disable.scc \
+                            cfg/bpf-disable.scc \
+                            cfg/net/rtnetlink-disable.scc \
+                            cfg/net/lpf-filter-disable.scc \
+                            cfg/net/ethtool-disable.scc \
                            "
 
 # These features are disabled by default in the net-diet branch.
@@ -199,6 +203,52 @@ KERNEL_FEATURES_SMALLEST = "${KERNEL_FEATURES_SMALLEST_NORMAL} \
                             "
 
 #KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST} \
+#			cfg/pae-disable.scc \
+#			cfg/efi-disable.scc \
+#                        "
+
+# for testing with slub stats, turn off slob, etc
+#KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST} \
+#			cfg/pae-disable.scc \
+#			cfg/efi-disable.scc \
+#                       cfg/proc-enable.scc \
+#                       cfg/slub.scc \
+#                       cfg/sysfs-enable.scc \
+#                       cfg/slub-stats.scc \
+#                       cfg/proc-sysctl-enable.scc \
+#                        "
+
+# valuable features but broken and need fixing:
+# - inet-raw needs to be enabled, disabling makes galileo at least unbootable
+# - multiuser needs to be enabled, disabling we can't get a shell or web
+# - proc-min needs to be enabled, disabling we can't get a shell or web
+KERNEL_FEATURES_SMALLEST_NET = "${KERNEL_FEATURES_SMALLEST} \
+                                cfg/net-enable.scc \
+                                cfg/inet-enable.scc \
+                                ${KERNEL_FEATURES_NET_DIET} \
+                                cfg/net/inet-raw.scc \
+                                cfg/proc-min-enable.scc \
+                                cfg/multiuser-enable.scc \
+                                cfg/pty-enable.scc \
+                               "
+
+#KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NET} \
+#			cfg/pae-disable.scc \
+#			cfg/efi-disable.scc \
+#                        "
+
+# for some reason we need lpf-filter with SMALLEST_NORMAL_NET
+# (hangs on boot without) but not SMALLEST_NET
+KERNEL_FEATURES_SMALLEST_NORMAL_NET = "${KERNEL_FEATURES_SMALLEST_NORMAL} \
+                                cfg/net-enable.scc \
+                                cfg/inet-enable.scc \
+                                ${KERNEL_FEATURES_NET_DIET} \
+                                cfg/net/inet-raw.scc \
+                                cfg/pty-enable.scc \
+                                cfg/net/lpf-filter.scc \
+                               "
+
+#KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NORMAL_NET} \
 #			cfg/pae-disable.scc \
 #			cfg/efi-disable.scc \
 #                        "
