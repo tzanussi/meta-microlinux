@@ -32,18 +32,38 @@ KERNEL_FEATURES_TINIFICATION = "features/tinification/tinification.scc \
                                 cfg/x86-feature-names-disable.scc \
                                 cfg/advise-syscalls-disable.scc \
                                 cfg/write-to-rtc-disable.scc \
+                                cfg/x86-model-table-disable.scc \
+                                cfg/obsolete-syscalls-disable.scc \
                                 cfg/user-io-disable.scc \
                                 cfg/splice-disable.scc \
                                 cfg/sysfs-syscall-disable.scc \
                                 cfg/uselib-disable.scc \
                                "
 
+# disabling lpf-filter-disable hangs kernel, which also means we can't disable
+# bpf, since lpf filter selects it.  So bpf-disable remains untested as well.
+# TODO: fix fib-list, currently we need to force trie and lose a few K.
+KERNEL_FEATURES_BROKEN = "cfg/net/lpf-filter-disable.scc \
+                          cfg/bpf-disable.scc \
+                         "
+
+KERNEL_FEATURES_NET_DIET = "cfg/rhashtable-disable.scc \
+                            cfg/ntp-disable.scc \
+                            cfg/net/rtnetlink-disable.scc \
+                            cfg/net/ethtool-disable.scc \
+                           "
+
 # Smallest 'normal' kernel i.e. can be used to scp new kernel to sd card
 # and see dmesg, oops, etc.  Cuts past this affect *something* important.
 KERNEL_FEATURES_SMALLEST_NORMAL = "${KERNEL_FEATURES_LTO} \
-			features/tinification/tinification.scc \
-			cfg/perf-disable.scc \
+			${KERNEL_FEATURES_TINIFICATION} \
+			${KERNEL_FEATURES_NET_DIET} \
                         "
+
+# Smallest useable kernel i.e. boots to usable shell, nothing more guaranteed
+KERNEL_FEATURES_SMALLEST = "${KERNEL_FEATURES_SMALLEST_NORMAL} \
+                           ${@base_contains('DISTRO_FEATURES', 'single-user', 'cfg/multiuser-disable.scc', '', d)} \
+                           "
 
 KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
 			cfg/pae-disable.scc \
