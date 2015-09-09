@@ -8,13 +8,14 @@ SRCREV_meta_i586-nlp-32-intel-common ?= "45393dd54f5ad77d43014c407c2b3520da42f42
 SRCREV_machine_i586-nlp-32-intel-common ?= "4e30e64c44df9e59bd13239951bb8d2b5b276e6f"
 KERNEL_FEATURES_append_i586-nlp-32-intel-common = ""
 
-SRC_URI_galileo = "git:///home/trz/yocto/microlinux-dozy/kernels/linux-yocto-micro-4.1.git;protocol=file;name=machine,lto,tinification;branch=${KBRANCH},lto,tinification; \
+SRC_URI_galileo = "git:///home/trz/yocto/microlinux-dozy/kernels/linux-yocto-micro-4.1.git;protocol=file;name=machine,lto,tinification,net-diet;branch=${KBRANCH},lto,tinification,net-diet; \
            git:///home/trz/yocto/microlinux-dozy/kernels/yocto-kernel-cache-micro.git;protocol=file;type=kmeta;name=meta;branch=yocto-4.1;destsuffix=${KMETA}"
 
 SRCREV_machine_${MACHINE}="${AUTOREV}"
 SRCREV_meta="${AUTOREV}"
 SRCREV_lto="${AUTOREV}"
 SRCREV_tinification="${AUTOREV}"
+SRCREV_net-diet="${AUTOREV}"
 LOCALCOUNT = "0"
 
 COMPATIBLE_MACHINE = "(galileo|minnowmax-64)"
@@ -42,15 +43,28 @@ KERNEL_FEATURES_TINIFICATION = "features/tinification/tinification.scc \
 
 # disabling lpf-filter-disable hangs kernel, which also means we can't disable
 # bpf, since lpf filter selects it.  So bpf-disable remains untested as well.
-# TODO: fix fib-list, currently we need to force trie and lose a few K.
+# inet-raw-disable hangs kernel, no oops either
+# fib-list was broken before and now even worse after hlist changes, need to
+# fix compilation errors due to hlist and other changes - see fib_trie.c for
+# how it should be since it was basicall copied from there and there seems
+# to have been underlying changes to look at.
 KERNEL_FEATURES_BROKEN = "cfg/net/lpf-filter-disable.scc \
                           cfg/bpf-disable.scc \
+                          cfg/net/inet-raw-disable.scc \
+                          cfg/net/fib-list.scc \
                          "
 
-KERNEL_FEATURES_NET_DIET = "cfg/rhashtable-disable.scc \
+KERNEL_FEATURES_NET_DIET = "features/net-diet/net-diet.scc \
+                            cfg/rhashtable-disable.scc \
                             cfg/ntp-disable.scc \
                             cfg/net/rtnetlink-disable.scc \
                             cfg/net/ethtool-disable.scc \
+                            cfg/net/ip-ping-disable.scc \
+                            cfg/net/tcp-metrics-disable.scc \
+                            cfg/net/ip-offload-disable.scc \
+                            cfg/net/packet-mmap-disable.scc \
+                            cfg/net/tcp-fastopen-disable.scc \
+                            features/crypto/crypto-disable.scc \
                            "
 
 # Smallest 'normal' kernel i.e. can be used to scp new kernel to sd card
