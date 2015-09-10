@@ -8,7 +8,7 @@ SRCREV_meta_i586-nlp-32-intel-common ?= "45393dd54f5ad77d43014c407c2b3520da42f42
 SRCREV_machine_i586-nlp-32-intel-common ?= "4e30e64c44df9e59bd13239951bb8d2b5b276e6f"
 KERNEL_FEATURES_append_i586-nlp-32-intel-common = ""
 
-SRC_URI_galileo = "git:///home/trz/yocto/microlinux-dozy/kernels/linux-yocto-micro-4.1.git;protocol=file;name=machine,lto,tinification,net-diet;branch=${KBRANCH},lto,tinification,net-diet; \
+SRC_URI_galileo = "git:///home/trz/yocto/microlinux-dozy/kernels/linux-yocto-micro-4.1.git;protocol=file;name=machine,lto,tinification,net-diet,staging;branch=${KBRANCH},lto,tinification,net-diet,staging; \
            git:///home/trz/yocto/microlinux-dozy/kernels/yocto-kernel-cache-micro.git;protocol=file;type=kmeta;name=meta;branch=yocto-4.1;destsuffix=${KMETA}"
 
 SRCREV_machine_${MACHINE}="${AUTOREV}"
@@ -16,6 +16,7 @@ SRCREV_meta="${AUTOREV}"
 SRCREV_lto="${AUTOREV}"
 SRCREV_tinification="${AUTOREV}"
 SRCREV_net-diet="${AUTOREV}"
+SRCREV_staging="${AUTOREV}"
 LOCALCOUNT = "0"
 
 COMPATIBLE_MACHINE = "(galileo|minnowmax-64)"
@@ -39,6 +40,15 @@ KERNEL_FEATURES_TINIFICATION = "features/tinification/tinification.scc \
                                 cfg/splice-disable.scc \
                                 cfg/sysfs-syscall-disable.scc \
                                 cfg/uselib-disable.scc \
+                                ${KERNEL_FEATURES_TINIFICATION_STAGING} \
+                               "
+
+# Merge the staging branch and disable the staging options.
+KERNEL_FEATURES_TINIFICATION_STAGING = "features/tinification/staging.scc \
+                                cfg/devmem-memdev-disable.scc \
+                                cfg/devmem-nonessential-disable.scc \
+                                cfg/devmem-random-disable.scc \
+                                cfg/proc-min-enable.scc \
                                "
 
 # disabling lpf-filter-disable hangs kernel, which also means we can't disable
@@ -83,6 +93,10 @@ KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
 			cfg/pae-disable.scc \
                         "
 
+#KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST} \
+#			cfg/pae-disable.scc \
+#                        cfg/virt-kmem.scc \
+#                        "
 
 # uncomment and replace these SRCREVs with the real commit ids once you've had
 # the appropriate changes committed to the upstream linux-yocto repo
