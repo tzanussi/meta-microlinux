@@ -8,7 +8,7 @@ SRCREV_meta_i586-nlp-32-intel-common ?= "45393dd54f5ad77d43014c407c2b3520da42f42
 SRCREV_machine_i586-nlp-32-intel-common ?= "4e30e64c44df9e59bd13239951bb8d2b5b276e6f"
 KERNEL_FEATURES_append_i586-nlp-32-intel-common = ""
 
-SRC_URI_galileo = "git:///home/trz/yocto/microlinux-dozy/kernels/linux-yocto-micro-4.1.git;protocol=file;name=machine,lto,tinification,net-diet,staging;branch=${KBRANCH},lto,tinification,net-diet,staging; \
+SRC_URI_galileo = "git:///home/trz/yocto/microlinux-dozy/kernels/linux-yocto-micro-4.1.git;protocol=file;name=machine,lto,tinification,net-diet,staging,xip;branch=${KBRANCH},lto,tinification,net-diet,staging,xip; \
            git:///home/trz/yocto/microlinux-dozy/kernels/yocto-kernel-cache-micro.git;protocol=file;type=kmeta;name=meta;branch=yocto-4.1;destsuffix=${KMETA}"
 
 SRCREV_machine_${MACHINE}="${AUTOREV}"
@@ -17,6 +17,7 @@ SRCREV_lto="${AUTOREV}"
 SRCREV_tinification="${AUTOREV}"
 SRCREV_net-diet="${AUTOREV}"
 SRCREV_staging="${AUTOREV}"
+SRCREV_xip="${AUTOREV}"
 LOCALCOUNT = "0"
 
 COMPATIBLE_MACHINE = "(galileo|minnowmax-64)"
@@ -88,6 +89,10 @@ KERNEL_FEATURES_SMALLEST_NORMAL = "${KERNEL_FEATURES_LTO} \
 KERNEL_FEATURES_SMALLEST = "${KERNEL_FEATURES_SMALLEST_NORMAL} \
                            ${@base_contains('DISTRO_FEATURES', 'single-user', 'cfg/multiuser-disable.scc', '', d)} \
                            "
+
+KERNEL_FEATURES_XIP = "features/tinification/xip.scc \
+                      ${@base_contains('DISTRO_FEATURES', 'xip', 'features/qemu/blkdev-enable.scc', '', d)} \
+                      "
 
 KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
 			cfg/pae-disable.scc \
