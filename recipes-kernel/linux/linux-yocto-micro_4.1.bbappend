@@ -73,12 +73,43 @@ KERNEL_FEATURES_SMALLEST_NORMAL = "${KERNEL_FEATURES_LTO} \
 			${KERNEL_FEATURES_NET_DIET} \
 			${KERNEL_FEATURES_TRACING} \
 			${KERNEL_FEATURES_XIP} \
+                        cfg/nohz-disable.scc \
+                        cfg/misc-disable.scc \
+                        features/crypto/crypto-disable.scc \
+                        cfg/hrt-disable.scc \
+                        cfg/proc-sysctl-disable.scc \
+                        cfg/x86-verbose-boot-disable.scc \
+                        ${@base_contains('DISTRO_FEATURES', 'tracing', '', 'cfg/slob.scc', d)} \
+                        cfg/gpio-user-disable.scc \
+                        cfg/net/packet-disable.scc \
+                        cfg/net/ipv6-disable.scc \
+                        cfg/pcie-disable.scc \
+                        cfg/sysfs-disable.scc \
+                        cfg/mtd-disable.scc \
+                        cfg/kallsyms-enable.scc \
                         "
 
 # Smallest useable kernel i.e. boots to usable shell, nothing more guaranteed
 KERNEL_FEATURES_SMALLEST = "${KERNEL_FEATURES_SMALLEST_NORMAL} \
                            ${@base_contains('DISTRO_FEATURES', 'single-user', 'cfg/multiuser-disable.scc', '', d)} \
                            cfg/virt-kmem.scc \
+                           cfg/proc-disable.scc \
+                           cfg/proc-min-disable.scc \
+                           cfg/acpi-disable.scc \
+                           cfg/pty-disable.scc \
+                           cfg/mmc-disable.scc \
+                           cfg/block-disable.scc \
+                           cfg/inet-disable.scc \
+                           cfg/net-disable.scc \
+                           cfg/bug-disable.scc \
+                           cfg/kallsyms-disable.scc \
+                           cfg/thermal-disable.scc \
+                           cfg/printk-disable.scc \
+                           cfg/hz-periodic.scc \
+                           cfg/cpu-idle-disable.scc \
+                           cfg/devmem-disable.scc \
+                           cfg/msi-disable.scc \
+                           cfg/x86-mce-disable.scc \
                            "
 
 KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
@@ -94,6 +125,13 @@ KERNEL_FEATURES_TRACING_OPTIONS = "features/tracing/tracing.scc \
 			   cfg/frame-pointers-enable.scc \
 			   features/lto/lto-disable.scc \
 			   features/ftrace/ftrace.scc \
+			   cfg/kallsyms-enable.scc \
+			   cfg/loglevel-debug.scc \
+			   cfg/slub.scc \
+			   cfg/slub-stats.scc \
+                           cfg/proc-min-disable.scc \
+                           cfg/proc-enable.scc \
+			   cfg/proc-page-monitor-enable.scc \
                            "
 
 KERNEL_FEATURES_TRACING = "${@base_contains('DISTRO_FEATURES', 'tracing', '${KERNEL_FEATURES_TRACING_OPTIONS}', '', d)}"
@@ -111,10 +149,12 @@ KERNEL_FEATURES_XIP = "${@base_contains('DISTRO_FEATURES', 'xip', '${KERNEL_FEAT
 # fix compilation errors due to hlist and other changes - see fib_trie.c for
 # how it should be since it was basicall copied from there and there seems
 # to have been underlying changes to look at.
+# - common-clk-enable - should be able to disable this but galileo selects it
 KERNEL_FEATURES_BROKEN = "cfg/net/lpf-filter-disable.scc \
                           cfg/bpf-disable.scc \
                           cfg/net/inet-raw-disable.scc \
                           cfg/net/fib-list.scc \
+                          cfg/common-clk-enable.scc \
                          "
 
 # uncomment and replace these SRCREVs with the real commit ids once you've had
