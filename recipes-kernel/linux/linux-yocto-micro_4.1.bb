@@ -4,7 +4,7 @@ require recipes-kernel/linux/linux-yocto.inc
 DEPENDS += "xz-native"
 
 KBRANCH_DEFAULT_galileo = "standard/micro/galileo"
-#KBRANCH_DEFAULT_minnowmax-64 = "micro/minnowmax"
+KBRANCH_DEFAULT_minnowmax-64 = "standard/micro/minnowmax-64"
 KBRANCH = "${KBRANCH_DEFAULT}"
 
 LINUX_KERNEL_TYPE = "micro"

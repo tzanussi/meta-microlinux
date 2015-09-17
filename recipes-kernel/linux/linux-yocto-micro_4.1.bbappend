@@ -8,7 +8,7 @@ SRCREV_meta_i586-nlp-32-intel-common ?= "45393dd54f5ad77d43014c407c2b3520da42f42
 SRCREV_machine_i586-nlp-32-intel-common ?= "4e30e64c44df9e59bd13239951bb8d2b5b276e6f"
 KERNEL_FEATURES_append_i586-nlp-32-intel-common = ""
 
-SRC_URI_galileo = "git:///home/trz/yocto/microlinux-dozy/kernels/linux-yocto-micro-4.1.git;protocol=file;name=machine,lto,tinification,net-diet,staging,xip,tracing;branch=${KBRANCH},lto,tinification,net-diet,staging,xip,tracing; \
+SRC_URI = "git:///home/trz/yocto/microlinux-dozy/kernels/linux-yocto-micro-4.1.git;protocol=file;name=machine,lto,tinification,net-diet,staging,xip,tracing;branch=${KBRANCH},lto,tinification,net-diet,staging,xip,tracing; \
            git:///home/trz/yocto/microlinux-dozy/kernels/yocto-kernel-cache-micro.git;protocol=file;type=kmeta;name=meta;branch=yocto-4.1;destsuffix=${KMETA}"
 
 SRCREV_machine_${MACHINE}="${AUTOREV}"
@@ -119,6 +119,9 @@ KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
 #KERNEL_FEATURES_append_galileo += "${KERNEL_FEATURES_SMALLEST} \
 #			cfg/pae-disable.scc \
 #                        "
+
+KERNEL_FEATURES_append_minnowmax-64 += "${KERNEL_FEATURES_SMALLEST_NORMAL} \
+                        "
 
 KERNEL_FEATURES_TRACING_OPTIONS = "features/tracing/tracing.scc \
 			   cfg/perf-enable.scc \
